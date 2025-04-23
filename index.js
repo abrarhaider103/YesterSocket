@@ -434,8 +434,8 @@ function makeServer(port, startIO) {
     }
 
 
-    server.listen(port || 3002, '0.0.0.0', () => {
-        console.log('The Main Server is now running on port :' + (port || 3002));
+    server.listen(port || 3000, '0.0.0.0', () => {
+        console.log('The Main Server is now running on port :' + (port || 3000));
     });
     killable(server);
 }
