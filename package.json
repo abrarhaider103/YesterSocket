@@ -1,0 +1,20 @@
+{
+  "name": "emulatorjs-netplay-server-old",
+  "version": "0.16.0",
+  "main": "index.js",
+  "description": "A Netplay Server For Emulatorjs Old",
+  "type": "module",
+  "author": {
+    "name": "EmulatorJS",
+    "url": "https://github.com/EmulatorJS"
+  },
+  "scripts": {
+    "start": "node --no-warnings index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "killable": "^1.0.1",
+    "socket.io": "^4.7.0",
+    "twilio": "^4.19.3"
+  }
+}
