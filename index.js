@@ -87,13 +87,13 @@ function checkAuth(authorization, passwordforserver) {
  */
 function makeServer(port, startIO) {
     const app = express();
-    // server = http.createServer(app);
-    const sslOptions = {
-        key: fs.readFileSync('./ssl/server.key'),
-        cert: fs.readFileSync('./ssl/server.cert')
-      };
+    server = http.createServer(app);
+    // const sslOptions = {
+    //     key: fs.readFileSync('./ssl/server.key'),
+    //     cert: fs.readFileSync('./ssl/server.cert')
+    //   };
       
-    server = https.createServer(sslOptions, app);
+    // server = https.createServer(sslOptions, app);
     app.use(express.urlencoded());
     app.use(express.json());
     app.get('/', (req, res) => {
