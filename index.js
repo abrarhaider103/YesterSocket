@@ -1,5 +1,7 @@
 import express from 'express';
 import http from 'http';
+import https from 'https';
+import fs from 'fs';
 //const https = require('https');
 import path from 'node:path';
 import killable from 'killable';
@@ -85,7 +87,13 @@ function checkAuth(authorization, passwordforserver) {
  */
 function makeServer(port, startIO) {
     const app = express();
-    server = http.createServer(app);
+    // server = http.createServer(app);
+    const sslOptions = {
+        key: fs.readFileSync('./ssl/server.key'),
+        cert: fs.readFileSync('./ssl/server.cert')
+      };
+      
+    server = https.createServer(sslOptions, app);
     app.use(express.urlencoded());
     app.use(express.json());
     app.get('/', (req, res) => {
