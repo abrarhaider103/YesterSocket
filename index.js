@@ -223,13 +223,11 @@ function makeServer(port, startIO) {
             // }
 
             const iceServers = [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' },
-                // Add TURN server if needed (optional)
+                { urls: 'stun:56.228.47.200:3478' }, 
                 {
-                  urls: 'turn:your.turn.server:3478',
-                  username: 'your-username',
-                  credential: 'your-password'
+                    urls: 'turn:56.228.47.200:3478',
+                    username: 'webrtc',
+                    credential: 'passYGAMword123'
                 }
             ];
             res.json(iceServers);
