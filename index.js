@@ -151,15 +151,88 @@ function makeServer(port, startIO) {
     });
 
 
+
+    //MYCODE
+    app.post('/create-room', (req, res) => {
+        const reject = () => {
+            res.setHeader('www-authenticate', 'Basic');
+            res.sendStatus(401);
+        }
+    
+        if (!checkAuth(req.headers.authorization, config.passwordforserver)) {
+            return reject();
+        }
+    
+        const { domain, game_id, room_name, maxParticipants, password } = req.body;
+        
+        if (!domain || !game_id || !room_name) {
+            return res.status(400).json({ error: "Missing required parameters" });
+        }
+    
+        const sessionid = `${domain}:${game_id}:${Date.now()}`;
+        const newRoom = new Room(domain, game_id, sessionid, room_name, maxParticipants || 4, 1, password || "", "admin", null, {}, 1);
+    
+        global.rooms.push(newRoom);
+    
+        return res.json({ 
+            message: "Room created successfully",
+            sessionid: sessionid,
+            room_name: room_name,
+            maxParticipants: maxParticipants || 4,
+            password: password ? true : false
+        });
+    });
+
+    app.get('/room-list', (req, res) => {
+        
+        console.log(global.rooms.length)
+        let roomList = global.rooms.map(room => ({
+            sessionid: room.id,
+            room_name: room.name,
+            domain: room.domain,
+            game_id: room.game_id,
+            maxParticipants: room.max,
+            currentParticipants: room.current,
+            hasPassword: !!room.password,
+            participants: room.users.map(user => ({
+                userid: user.userid,
+                extra: user.extra || {},
+            }))
+        }));
+    
+        res.json(roomList);
+    });
+    
+    
+
+    //MYCODE
+
+    
+
+    
+
+
     if (startIO !== false) {
         app.get('/webrtc', (req, res) => {
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.setHeader('Content-Type', 'application/json');
-            if (!cachedToken) {
-                res.end("[]");
-            } else {
-                res.json(cachedToken.iceServers);
-            }
+            // if (!cachedToken) {
+            //     res.end("[]");
+            // } else {
+            //     res.json(cachedToken.iceServers);
+            // }
+
+            const iceServers = [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                // Add TURN server if needed (optional)
+                {
+                  urls: 'turn:your.turn.server:3478',
+                  username: 'your-username',
+                  credential: 'your-password'
+                }
+            ];
+            res.json(iceServers);
         });
         app.get('/list', function(req, res) {
             res.setHeader('Access-Control-Allow-Origin', '*');
@@ -189,6 +262,7 @@ function makeServer(port, startIO) {
             }
             res.end(JSON.stringify(rv));
         })
+        
         const profile_rooms = {};
         const io = new Server(server, {
             cors: {
