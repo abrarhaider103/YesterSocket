@@ -246,11 +246,9 @@ function makeServer(port, startIO) {
             args.coreVer = parseInt(args.coreVer);
             let rv = {};
             for (let i=0; i<global.rooms.length; i++) {
-                //console.log(global.rooms[i].domain, args.domain);
-                //console.log(global.rooms[i].game_id, args.game_id);
-                if (global.rooms[i].domain !== args.domain ||
-                    global.rooms[i].game_id !== args.game_id ||
-                    global.rooms[i].coreVer !== args.coreVer) continue;
+                // if (global.rooms[i].domain !== args.domain ||
+                //     global.rooms[i].game_id !== args.game_id ||
+                //     global.rooms[i].coreVer !== args.coreVer) continue;
                 rv[global.rooms[i].sessionid] = {
                     owner_name: global.rooms[i].owner.extra.name,
                     room_name: global.rooms[i].name,
