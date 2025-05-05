@@ -216,21 +216,21 @@ function makeServer(port, startIO) {
         app.get('/webrtc', (req, res) => {
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.setHeader('Content-Type', 'application/json');
-            if (!cachedToken) {
-                res.end("[]");
-            } else {
-                res.json(cachedToken.iceServers);
-            }
+            // if (!cachedToken) {
+            //     res.end("[]");
+            // } else {
+            //     res.json(cachedToken.iceServers);
+            // }
 
-            // const iceServers = [
-            //     { urls: 'stun:56.228.47.200:3478' }, 
-            //     {
-            //         urls: 'turn:56.228.47.200:3478',
-            //         username: 'webrtc',
-            //         credential: 'passYGAMword123'
-            //     }
-            // ];
-            // res.json(iceServers);
+            const iceServers = [
+                { urls: 'stun:56.228.47.200:3478' }, 
+                {
+                    urls: 'turn:56.228.47.200:3478',
+                    username: 'webrtc',
+                    credential: 'passYGAMword123'
+                }
+            ];
+            res.json(iceServers);
         });
         app.get('/list', function(req, res) {
             res.setHeader('Access-Control-Allow-Origin', '*');
