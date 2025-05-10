@@ -415,20 +415,25 @@ function makeServer(port, startIO) {
         if (typeof cb === "function") cb(true);
       });
       socket.on("open-room", function (data, cb) {
-        room = new Room(
-          data.extra.domain,
-          data.extra.game_id,
-          args.sessionid,
-          data.extra.room_name,
-          args.maxParticipantsAllowed,
-          1,
-          data.password.trim(),
-          args.userid,
-          socket,
-          data.extra,
-          args.coreVer
-        );
-        global.rooms.push(room);
+        //search for room
+        room = getRoom(data.extra.domain, data.extra.game_id, data.sessionid);
+        if (room === null) {
+            room = new Room(
+                data.extra.domain,
+                data.extra.game_id,
+                args.sessionid,
+                data.extra.room_name,
+                args.maxParticipantsAllowed,
+                1,
+                data.password.trim(),
+                args.userid,
+                socket,
+                data.extra,
+                args.coreVer
+              );
+              global.rooms.push(room);
+        }
+        
         extraData = data.extra;
 
         socket.emit("extra-data-updated", null, extraData);
