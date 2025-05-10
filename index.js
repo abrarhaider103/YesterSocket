@@ -390,6 +390,7 @@ function makeServer(port, startIO) {
           if (room === null) return;
           io.to(room.id).emit("user-disconnected", args.userid);
           for (let i = 0; i < room.users.length; i++) {
+            io.to(room.id).emit("user-disconnected", room.users[i].userid);
             if (room.users[i].userid === args.userid) {
               room.users.splice(i, 1);
               break;
@@ -441,11 +442,6 @@ function makeServer(port, startIO) {
               );
               global.rooms.push(room);
         }else{
-
-            for (let i = 0; i < room.users.length; i++) {
-                room.users.splice(i, 1);
-              }
-            
         }
         
         extraData = data.extra;
