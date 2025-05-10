@@ -440,6 +440,13 @@ function makeServer(port, startIO) {
                 args.coreVer
               );
               global.rooms.push(room);
+        }else{
+            room.users.forEach((user) => {
+              socket.to(room.id).emit("disconnect", {
+                userid: user.userid,
+                extra: user.extra,
+              });
+            })
         }
         
         extraData = data.extra;
