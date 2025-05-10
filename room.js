@@ -40,6 +40,8 @@ class Room {
         /** @type number */
         this.coreVer = parseInt(coreVer);
 
+        this.creator = "";
+
         // define user type
 
         /**
@@ -52,13 +54,20 @@ class Room {
         /**
          * @type User
          */
-        this.owner = {
-            userid,
-            socket,
-            extra
-        }
+        
         /** @type User[] */
-        this.users = [this.owner];
+        if(socket){
+            this.owner = {
+                userid,
+                socket,
+                extra
+            }
+            this.users = [this.owner];
+        }else{
+            this.creator = userid;
+            this.users = [];
+        }
+        
     }
     /**
      * Checks to see if the specified password matches this password
@@ -83,6 +92,19 @@ class Room {
         })
         this.users.push(user);
         this.current++;
+    }
+    removeUser(userid) {
+        this.users = this.users.filter(u => u.userid !== userid);
+        this.current = this.users.length;
+    }
+
+    changeOwner(userid) {
+        const user = this.users.find(u => u.userid === userid);
+        if (user) {
+            this.owner = user;
+            return true;
+        }
+        return false;
     }
 }
 
