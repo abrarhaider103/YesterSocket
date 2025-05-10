@@ -60,6 +60,14 @@ function getRoom(domain, game_id, sessionid) {
   }
   return null;
 }
+function getRoomTwo(game_id) {
+    for (let i = 0; i < global.rooms.length; i++) {
+      if (global.rooms[i].game_id === game_id) {
+        return global.rooms[i];
+      }
+    }
+    return null;
+  }
 
 if (mainserver === true) {
   makeServer(process.env.PORT);
@@ -416,7 +424,7 @@ function makeServer(port, startIO) {
       });
       socket.on("open-room", function (data, cb) {
         //search for room
-        room = getRoom(data.extra.domain, data.extra.game_id, data.sessionid);
+        room = getRoomTwo( data.extra.game_id);
         if (room === null) {
             room = new Room(
                 data.extra.domain,
