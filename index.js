@@ -441,12 +441,11 @@ function makeServer(port, startIO) {
               );
               global.rooms.push(room);
         }else{
-            room.users.forEach((user) => {
-              socket.to(room.id).emit("disconnect", {
-                userid: user.userid,
-                extra: user.extra,
-              });
-            })
+
+            for (let i = 0; i < room.users.length; i++) {
+                room.users.splice(i, 1);
+              }
+            
         }
         
         extraData = data.extra;
