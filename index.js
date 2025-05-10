@@ -262,15 +262,15 @@ function makeServer(port, startIO) {
 
         const iceServers = [
             {
-                urls: "stun:56.228.47.200:3478"
+                urls: "stun:13.50.120.137:3478"
             },
             {
-                urls: "turn:56.228.47.200:3478?transport=udp",
+                urls: "turn:13.50.120.137:3478?transport=udp",
                 username: "demostun",
                 credential: "demostun123"
             },
             {
-                urls: "turn:56.228.47.200:3478?transport=tcp",
+                urls: "turn:13.50.120.137:3478?transport=tcp",
                 username: "demostun",
                 credential: "demostun123"
             }
@@ -278,18 +278,18 @@ function makeServer(port, startIO) {
 
         // const iceServers = [
         //     {
-        //       url: "stun:56.228.47.200:3478",
-        //       urls: "stun:56.228.47.200:3478"
+        //       url: "stun:13.50.120.137:3478",
+        //       urls: "stun:13.50.120.137:3478"
         //     },
         //     {
-        //       url: "turn:56.228.47.200:3478?transport=udp",
-        //       urls: "turn:56.228.47.200:3478?transport=udp",
+        //       url: "turn:13.50.120.137:3478?transport=udp",
+        //       urls: "turn:13.50.120.137:3478?transport=udp",
         //       username: "demostun",
         //       credential: "demostun123"
         //     },
         //     {
-        //       url: "turn:56.228.47.200:3478?transport=tcp",
-        //       urls: "turn:56.228.47.200:3478?transport=tcp",
+        //       url: "turn:13.50.120.137:3478?transport=tcp",
+        //       urls: "turn:13.50.120.137:3478?transport=tcp",
         //       username: "demostun",
         //       credential: "demostun123"
         //     }
