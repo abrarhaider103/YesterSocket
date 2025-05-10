@@ -260,15 +260,6 @@ function makeServer(port, startIO) {
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.setHeader("Content-Type", "application/json");
 
-        const iceServers = [
-            { urls: "stun:stun.l.google.com:19302" },
-            { urls: "stun:stun1.l.google.com:19302" },
-            { urls: "stun:stun2.l.google.com:19302" },
-            { urls: "stun:stun3.l.google.com:19302" },
-            { urls: "stun:stun4.l.google.com:19302" }
-        ];
-    
-        res.json({ iceServers });
         
         // if (!cachedToken) {
         //     res.end("[]");
@@ -276,15 +267,18 @@ function makeServer(port, startIO) {
         //     res.json(cachedToken.iceServers);
         // }
 
-        // const iceServers = [
-        //   { urls: "stun:56.228.47.200:3478" },
-        //   {
-        //     urls: "turn:56.228.47.200:3478",
-        //     username: "webrtc",
-        //     credential: "passYGAMword123",
-        //   },
-        // ];
-        // res.json(iceServers);
+
+
+        const iceServers = [
+            { urls: ["stun:56.228.47.200:3478"] },
+            {
+              urls: ["turn:56.228.47.200:3478"],
+              username: "demostun",
+              credential: "demostun123"
+            }
+          ];
+          
+          res.json({ iceServers });
       });
       app.get("/list", function (req, res) {
         res.setHeader("Access-Control-Allow-Origin", "*");
