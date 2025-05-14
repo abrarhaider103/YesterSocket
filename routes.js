@@ -2,12 +2,29 @@
 import express from "express";
 import path from "node:path";
 import Room from "./room.js";
-import { getRoom, getRoomTwo, getNewToken, transformArgs } from "./utils.js";
+import Twilio from "twilio";
+import { getRoom, getRoomTwo, transformArgs } from "./utils.js";
 
 const router = express.Router();
 const __dirname = path.resolve();
 
+let cachedToken = null;
 let nofusers = 0;
+
+const twilio = Twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
+const getNewToken = function () {
+  twilio.tokens.create({}, function (err, token) {
+    if (!err && token) {
+      cachedToken = token;
+    }
+  });
+};
+
+getNewToken();
+setInterval(getNewToken, 1000 * 60 * 10);
 
 router.get("/", (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -128,22 +145,28 @@ router.get("/webrtc", (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Content-Type", "application/json");
 
-  const iceServers = [
-    {
-      urls: "stun:13.50.120.137:3478",
-    },
-    {
-      urls: "turn:13.50.120.137:3478?transport=udp",
-      username: "demostun",
-      credential: "demostun123",
-    },
-    {
-      urls: "turn:13.50.120.137:3478?transport=tcp",
-      username: "demostun",
-      credential: "demostun123",
-    },
-  ];
-  res.json(iceServers);
+  if (!cachedToken) {
+    res.end("[]");
+  } else {
+    res.json(cachedToken.iceServers);
+  }
+
+  // const iceServers = [
+  //   {
+  //     urls: "stun:13.50.120.137:3478",
+  //   },
+  //   {
+  //     urls: "turn:13.50.120.137:3478?transport=udp",
+  //     username: "demostun",
+  //     credential: "demostun123",
+  //   },
+  //   {
+  //     urls: "turn:13.50.120.137:3478?transport=tcp",
+  //     username: "demostun",
+  //     credential: "demostun123",
+  //   },
+  // ];
+  // res.json(iceServers);
 });
 
 router.get("/list", function (req, res) {

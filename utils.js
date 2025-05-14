@@ -21,19 +21,14 @@ export const getRoomTwo = (game_id) => {
 };
 
 export const getNewToken = () => {
-  if (config.TWILIO_ACCOUNT_SID) {
-    const twilio = Twilio(
-      config.TWILIO_ACCOUNT_SID || "",
-      config.TWILIO_AUTH_TOKEN || ""
-    );
+
+    const twilio = Twilio(process.env.TWILIO_ACCOUNT_SID,
+      process.env.TWILIO_AUTH_TOKEN);
     twilio.tokens.create({}, function (err, token) {
       if (!err && token) {
         cachedToken = token;
       }
     });
-  } else {
-    throw new Error("Missing twilto information. Cannot run!");
-  }
 };
 
 export const checkAuth = (authorization, passwordforserver) => {
