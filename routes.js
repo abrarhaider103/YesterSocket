@@ -2,8 +2,9 @@
 import express from "express";
 import path from "node:path";
 import Room from "./room.js";
-import Twilio from "twilio";
+import Twilio from 'twilio';
 import { getRoom, getRoomTwo, transformArgs } from "./utils.js";
+import config from './config.json' assert { type: 'json' };
 
 const router = express.Router();
 const __dirname = path.resolve();
@@ -11,20 +12,26 @@ const __dirname = path.resolve();
 let cachedToken = null;
 let nofusers = 0;
 
-const twilio = Twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
-const getNewToken = function () {
-  twilio.tokens.create({}, function (err, token) {
-    if (!err && token) {
-      cachedToken = token;
-    }
-  });
-};
 
+let getNewToken;
+
+if (config.TWILIO_ACCOUNT_SID) {
+    const twilio = Twilio(config.TWILIO_ACCOUNT_SID || "", config.TWILIO_AUTH_TOKEN || "");
+    getNewToken = function() {
+        twilio.tokens.create({}, function(err, token) {
+            if (!err && token) {
+                cachedToken = token;
+            }
+        });
+    }
+} else {
+    getNewToken = function() {
+        throw new Error("Missing twilto information. Cannot run!");
+    }
+}
 getNewToken();
-setInterval(getNewToken, 1000 * 60 * 10);
+setInterval(getNewToken, 1000*60*10);
+
 
 router.get("/", (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");

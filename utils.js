@@ -1,4 +1,4 @@
-import Twilio from "twilio";
+// import Twilio from "twilio";
 import config from "./config.json" assert { type: "json" };
 
 var cachedToken = null;
@@ -22,13 +22,13 @@ export const getRoomTwo = (game_id) => {
 
 export const getNewToken = () => {
 
-    const twilio = Twilio(process.env.TWILIO_ACCOUNT_SID,
-      process.env.TWILIO_AUTH_TOKEN);
-    twilio.tokens.create({}, function (err, token) {
-      if (!err && token) {
-        cachedToken = token;
-      }
-    });
+    // const twilio = Twilio(process.env.TWILIO_ACCOUNT_SID,
+    //   process.env.TWILIO_AUTH_TOKEN);
+    // twilio.tokens.create({}, function (err, token) {
+    //   if (!err && token) {
+    //     cachedToken = token;
+    //   }
+    // });
 };
 
 export const checkAuth = (authorization, passwordforserver) => {
