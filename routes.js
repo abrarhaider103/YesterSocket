@@ -158,62 +158,28 @@ router.get("/webrtc", (req, res) => {
   //   res.json(cachedToken.iceServers);
   // }
 
-  const iceServers = 
-  
-//   [
-//     { urls: "stun:stun.l.google.com:19302" },
-//     { urls: "stun:stun1.l.google.com:19302" },
-//     {
-//         urls: "turn:13.50.120.137:3478?transport=udp",
-//         username: "demostun",
-//         credential: "demostun123"
-//     },
-//     {
-//         urls: "turn:13.50.120.137:3478?transport=tcp",
-//         username: "demostun",
-//         credential: "demostun123"
-//     }
-// ]
-
-[
-  {
-      urls: "turn:13.50.120.137:3478?transport=udp",
-      username: "demostun",
-      credential: "demostun123"
-  },
-  {
-      urls: "turn:13.50.120.137:3478?transport=tcp",
-      username: "demostun",
-      credential: "demostun123"
-  }
-]
-  
-  ;
   // const iceServers = [
-  //     {
-  //       urls: "stun:stun.relay.metered.ca:80",
-  //     },
-  //     {
-  //       urls: "turn:global.relay.metered.ca:80",
-  //       username: "eb8ee60978a3c2d922e740e4",
-  //       credential: "pN7rbCQTL/okDDQa",
-  //     },
-  //     {
-  //       urls: "turn:global.relay.metered.ca:80?transport=tcp",
-  //       username: "eb8ee60978a3c2d922e740e4",
-  //       credential: "pN7rbCQTL/okDDQa",
-  //     },
-  //     {
-  //       urls: "turn:global.relay.metered.ca:443",
-  //       username: "eb8ee60978a3c2d922e740e4",
-  //       credential: "pN7rbCQTL/okDDQa",
-  //     },
-  //     {
-  //       urls: "turns:global.relay.metered.ca:443?transport=tcp",
-  //       username: "eb8ee60978a3c2d922e740e4",
-  //       credential: "pN7rbCQTL/okDDQa",
-  //     },
+  //   {
+  //     urls: "stun:13.50.120.137:3478",
+  //   },
+  //   {
+  //     urls: "turn:13.50.120.137:3478?transport=udp",
+  //     username: "demostun",
+  //     credential: "demostun123",
+  //   },
+  //   {
+  //     urls: "turn:13.50.120.137:3478?transport=tcp",
+  //     username: "demostun",
+  //     credential: "demostun123",
+  //   },
   // ];
+  const iceServers = [
+    { urls: "stun:stun.relay.metered.ca:80" },
+    { urls: "turn:global.relay.metered.ca:80", username: "eb8ee60978a3c2d922e740e4", credential: "pN7rbCQTL/okDDQa" },
+    { urls: "turn:global.relay.metered.ca:80?transport=tcp", username: "eb8ee60978a3c2d922e740e4", credential: "pN7rbCQTL/okDDQa" },
+    { urls: "turn:global.relay.metered.ca:443", username: "eb8ee60978a3c2d922e740e4", credential: "pN7rbCQTL/okDDQa" },
+    { urls: "turns:global.relay.metered.ca:443?transport=tcp", username: "eb8ee60978a3c2d922e740e4", credential: "pN7rbCQTL/okDDQa" }
+];
   res.json(iceServers);
 });
 
