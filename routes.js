@@ -160,19 +160,32 @@ router.get("/webrtc", (req, res) => {
 
   const iceServers = 
   
-  [
-    { urls: "stun:stun.l.google.com:19302" },
-    { urls: "stun:stun1.l.google.com:19302" },
-    {
-        urls: "turn:13.50.120.137:3478?transport=udp",
-        username: "demostun",
-        credential: "demostun123"
-    },
-    {
-        urls: "turn:13.50.120.137:3478?transport=tcp",
-        username: "demostun",
-        credential: "demostun123"
-    }
+//   [
+//     { urls: "stun:stun.l.google.com:19302" },
+//     { urls: "stun:stun1.l.google.com:19302" },
+//     {
+//         urls: "turn:13.50.120.137:3478?transport=udp",
+//         username: "demostun",
+//         credential: "demostun123"
+//     },
+//     {
+//         urls: "turn:13.50.120.137:3478?transport=tcp",
+//         username: "demostun",
+//         credential: "demostun123"
+//     }
+// ]
+
+[
+  {
+      urls: "turn:13.50.120.137:3478?transport=udp",
+      username: "demostun",
+      credential: "demostun123"
+  },
+  {
+      urls: "turn:13.50.120.137:3478?transport=tcp",
+      username: "demostun",
+      credential: "demostun123"
+  }
 ]
   
   ;
