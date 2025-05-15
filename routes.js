@@ -152,11 +152,11 @@ router.get("/webrtc", (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Content-Type", "application/json");
 
-  // if (!cachedToken) {
-  //   res.end("[]");
-  // } else {
-  //   res.json(cachedToken.iceServers);
-  // }
+  if (!cachedToken) {
+    res.end("[]");
+  } else {
+    res.json(cachedToken.iceServers);
+  }
 
   // const iceServers = [
   //   {
@@ -173,14 +173,32 @@ router.get("/webrtc", (req, res) => {
   //     credential: "demostun123",
   //   },
   // ];
-  const iceServers = [
-    { urls: "stun:stun.relay.metered.ca:80" },
-    { urls: "turn:global.relay.metered.ca:80", username: "eb8ee60978a3c2d922e740e4", credential: "pN7rbCQTL/okDDQa" },
-    { urls: "turn:global.relay.metered.ca:80?transport=tcp", username: "eb8ee60978a3c2d922e740e4", credential: "pN7rbCQTL/okDDQa" },
-    { urls: "turn:global.relay.metered.ca:443", username: "eb8ee60978a3c2d922e740e4", credential: "pN7rbCQTL/okDDQa" },
-    { urls: "turns:global.relay.metered.ca:443?transport=tcp", username: "eb8ee60978a3c2d922e740e4", credential: "pN7rbCQTL/okDDQa" }
-];
-  res.json(iceServers);
+  // const iceServers = [
+  //     {
+  //       urls: "stun:stun.relay.metered.ca:80",
+  //     },
+  //     {
+  //       urls: "turn:global.relay.metered.ca:80",
+  //       username: "eb8ee60978a3c2d922e740e4",
+  //       credential: "pN7rbCQTL/okDDQa",
+  //     },
+  //     {
+  //       urls: "turn:global.relay.metered.ca:80?transport=tcp",
+  //       username: "eb8ee60978a3c2d922e740e4",
+  //       credential: "pN7rbCQTL/okDDQa",
+  //     },
+  //     {
+  //       urls: "turn:global.relay.metered.ca:443",
+  //       username: "eb8ee60978a3c2d922e740e4",
+  //       credential: "pN7rbCQTL/okDDQa",
+  //     },
+  //     {
+  //       urls: "turns:global.relay.metered.ca:443?transport=tcp",
+  //       username: "eb8ee60978a3c2d922e740e4",
+  //       credential: "pN7rbCQTL/okDDQa",
+  //     },
+  // ];
+  // res.json(iceServers);
 });
 
 router.get("/list", function (req, res) {
