@@ -158,21 +158,23 @@ router.get("/webrtc", (req, res) => {
   //   res.json(cachedToken.iceServers);
   // }
 
-  const iceServers = [
+  const iceServers = 
+  
+  [
+    { urls: "stun:13.50.120.137:3478" },
     {
-      urls: "stun:13.50.120.137:3478",
+        urls: "turn:13.50.120.137:3478?transport=udp",
+        username: "demostun",
+        credential: "demostun123"
     },
     {
-      urls: "turn:13.50.120.137:3478?transport=udp",
-      username: "demostun",
-      credential: "demostun123",
-    },
-    {
-      urls: "turn:13.50.120.137:3478?transport=tcp",
-      username: "demostun",
-      credential: "demostun123",
-    },
-  ];
+        urls: "turn:13.50.120.137:3478?transport=tcp",
+        username: "demostun",
+        credential: "demostun123"
+    }
+]
+  
+  ;
   // const iceServers = [
   //     {
   //       urls: "stun:stun.relay.metered.ca:80",
