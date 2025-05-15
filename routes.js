@@ -152,27 +152,27 @@ router.get("/webrtc", (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Content-Type", "application/json");
 
-  if (!cachedToken) {
-    res.end("[]");
-  } else {
-    res.json(cachedToken.iceServers);
-  }
+  // if (!cachedToken) {
+  //   res.end("[]");
+  // } else {
+  //   res.json(cachedToken.iceServers);
+  // }
 
-  // const iceServers = [
-  //   {
-  //     urls: "stun:13.50.120.137:3478",
-  //   },
-  //   {
-  //     urls: "turn:13.50.120.137:3478?transport=udp",
-  //     username: "demostun",
-  //     credential: "demostun123",
-  //   },
-  //   {
-  //     urls: "turn:13.50.120.137:3478?transport=tcp",
-  //     username: "demostun",
-  //     credential: "demostun123",
-  //   },
-  // ];
+  const iceServers = [
+    {
+      urls: "stun:13.50.120.137:3478",
+    },
+    {
+      urls: "turn:13.50.120.137:3478?transport=udp",
+      username: "demostun",
+      credential: "demostun123",
+    },
+    {
+      urls: "turn:13.50.120.137:3478?transport=tcp",
+      username: "demostun",
+      credential: "demostun123",
+    },
+  ];
   // const iceServers = [
   //     {
   //       urls: "stun:stun.relay.metered.ca:80",
@@ -198,7 +198,7 @@ router.get("/webrtc", (req, res) => {
   //       credential: "pN7rbCQTL/okDDQa",
   //     },
   // ];
-  // res.json(iceServers);
+  res.json(iceServers);
 });
 
 router.get("/list", function (req, res) {
