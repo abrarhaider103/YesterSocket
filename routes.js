@@ -33,11 +33,11 @@ getNewToken();
 setInterval(getNewToken, 1000*60*10);
 
 
-router.get("/", (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Content-Type", "application/json");
-  res.sendFile(path.join(__dirname + "/index.html"));
-});
+// router.get("/", (req, res) => {
+//   res.setHeader("Access-Control-Allow-Origin", "*");
+//   res.setHeader("Content-Type", "application/json");
+//   res.sendFile(path.join(__dirname + "/index.html"));
+// });
 
 router.get("/img/:imageName", function (req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");

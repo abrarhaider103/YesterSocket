@@ -38,6 +38,11 @@ function makeServer(port, startIO) {
   app.use(express.json());
 
   app.use("/", routes);
+  app.get("/", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Content-Type", "application/json");
+    res.sendFile(path.join(__dirname + "/index.html"));
+  });
   app.post("/startstop", (req, res) => {
     if (req.body.function === "stop") {
       global.mainserver = false;
