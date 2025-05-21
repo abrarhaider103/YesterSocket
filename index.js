@@ -1,10 +1,16 @@
 import express from "express";
 import http from "http";
+import fs from "fs";
+import https from "https";
 import path from "node:path";
 import killable from "killable";
 import { Server } from "socket.io";
 import { getRoom, getRoomTwo, getNewToken, transformArgs } from "./utils.js";
 import routes from "./routes.js";
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
 const __dirname = path.resolve();
 
 import Room from "./room.js";
@@ -26,6 +32,7 @@ if (global.mainserver === true) {
 
 function makeServer(port, startIO) {
   const app = express();
+  // server = https.createServer(options, app);
   server = http.createServer(app);
   app.use(express.urlencoded());
   app.use(express.json());
@@ -48,7 +55,6 @@ function makeServer(port, startIO) {
   });
 
   if (startIO !== false) {
-    const profile_rooms = {};
     const io = new Server(server, {
       cors: {
         origin: "*",
@@ -56,6 +62,7 @@ function makeServer(port, startIO) {
         credentials: true,
       },
     });
+    const group_rooms = {};
 
     io.on("connection", (socket) => {
       global.nofusers = io.engine.clientsCount;
@@ -73,21 +80,12 @@ function makeServer(port, startIO) {
           io.to(room.id).emit("user-disconnected", args.userid);
 
           if (room.owner.userid === args.userid) {
-            console.log("asd");
             for (let i = 0; i < global.rooms.length; i++) {
               if (global.rooms[i].id === room.id) {
                 global.rooms.splice(i, 1);
                 break;
               }
             }
-
-            for (let i = 0; i < profile_rooms[room.game_id].length; i++) {
-              if (profile_rooms[room.game_id][i].isAdmin === false) {
-                  io.to(profile_rooms[room.game_id][i].id).emit("room-closed", room.sessionid);
-                  profile_rooms[room.game_id].splice(i, 1);
-              }
-            }
-            
           }
           //   room.current = room.users.length;
 
@@ -286,70 +284,154 @@ function makeServer(port, startIO) {
         }
       });
 
-      socket.on("join", (userData) => {
-        const { name, email, pic, sessionID, isAdmin } = userData;
-        if (!profile_rooms[sessionID]) profile_rooms[sessionID] = [];
-        const existingUserIndex = profile_rooms[sessionID].findIndex(
-          (u) => u.email === email
-        );
 
-        if (existingUserIndex !== -1) {
-          profile_rooms[sessionID][existingUserIndex].id = socket.id;
-          socket.join(sessionID);
-          socket.sessionID = sessionID;
-          io.to(sessionID).emit("userList", profile_rooms[sessionID]);
+
+
+
+
+
+      //audio
+      console.log('User connected:', socket.id);
+      socket.on('join', ({ room, userName, isAdmin, profilePic }) => {
+        // Check if admin is present in the room
+        const hasAdmin = group_rooms[room]?.some(user => user.isAdmin);
+        if (!isAdmin && !hasAdmin) {
+          console.log(`Join rejected for ${userName} in room ${room}: Admin has not yet joined.`);
+          socket.emit('join-rejected', 'Admin has not yet joined.');
+          socket.disconnect(true);
           return;
         }
-
-        // if (profile_rooms[sessionID].length >= 4) {
-        //   socket.emit("roomFull");
-        //   return;
-        // }
-
-        userData.id = socket.id;
-        userData.isAdmin = isAdmin;
-        socket.join(sessionID);
-        socket.sessionID = sessionID;
-
-        profile_rooms[sessionID].push(userData);
-
-        io.to(sessionID).emit("userList", profile_rooms[sessionID]);
-      });
-
-      socket.on("message", ({ text, sessionID }) => {
-        io.to(sessionID).emit("message", text);
-      });
-
-      socket.on("kickUser", ({ userId, sessionID }) => {
-        const kicker = profile_rooms[sessionID]?.find(
-          (u) => u.id === socket.id
-        );
-        if (!kicker || !kicker.isAdmin) return;
-
-        const userToKick = profile_rooms[sessionID]?.find(
-          (u) => u.id === userId
-        );
-        if (userToKick) {
-          profile_rooms[sessionID] = profile_rooms[sessionID].filter(
-            (u) => u.id !== userId
-          );
-          io.to(userId).emit("kicked");
-          io.to(sessionID).emit("userList", profile_rooms[sessionID]);
+    
+        socket.join(room);
+        console.log(`${userName} joined room ${room} as ${isAdmin ? 'admin' : 'member'}`);
+    
+        if (!group_rooms[room]) {
+          group_rooms[room] = [];
         }
-      });
-
-      socket.on("disconnect-user", () => {
-        if (!socket.sessionID) return;
-        const userIndex = profile_rooms[socket.sessionID].findIndex(
-          (u) => u.id === socket.id
-        );
-        if (userIndex !== -1) {
-          profile_rooms[socket.sessionID].splice(userIndex, 1);
-          io.to(socket.sessionID).emit(
-            "userList",
-            profile_rooms[socket.sessionID]
-          );
+    
+        // Check for existing user with the same userName
+        const existingUser = group_rooms[room].find(u => u.userName === userName && u.id !== socket.id);
+        if (existingUser) {
+          console.log(`Kicking existing user ${userName} (id: ${existingUser.id}) from room ${room}`);
+          group_rooms[room] = group_rooms[room].filter(u => u.id !== existingUser.id);
+          io.to(existingUser.id).emit('kicked');
+          socket.to(room).emit('user-left', { id: existingUser.id });
+          io.sockets.sockets.get(existingUser.id)?.leave(room);
         }
+    
+        // Add new user
+        group_rooms[room].push({ id: socket.id, userName, isAdmin, muted: false, profilePic });
+    
+        socket.to(room).emit('user-joined', { id: socket.id, userName, isAdmin, profilePic });
+        io.to(room).emit('participants', group_rooms[room]);
+    
+        socket.on('signal', ({ to, data }) => {
+          io.to(to).emit('signal', { from: socket.id, data });
+        });
+    
+        socket.on('mute-user', ({ room, id, muted }) => {
+          const user = group_rooms[room]?.find(u => u.id === socket.id);
+          if (user && user.isAdmin) {
+            const targetUser = group_rooms[room]?.find(u => u.id === id);
+            if (targetUser && !targetUser.isAdmin) {
+              targetUser.muted = muted;
+              io.to(room).emit('mute-user', { id, muted });
+              io.to(room).emit('participants', group_rooms[room]);
+              console.log(`${userName} ${muted ? 'muted' : 'unmuted'} ${targetUser.userName} in room ${room}`);
+            }
+          }
+        });
+    
+        socket.on('self-mute', ({ room, id, muted }) => {
+          const user = group_rooms[room]?.find(u => u.id === id);
+          if (user) {
+            user.muted = muted;
+            io.to(room).emit('mute-user', { id, muted });
+            io.to(room).emit('participants', group_rooms[room]);
+            console.log(`${user.userName} ${muted ? 'muted' : 'unmuted'} themselves in room ${room}`);
+          }
+        });
+    
+        socket.on('kick-user', ({ room, id }) => {
+          const user = group_rooms[room]?.find(u => u.id === socket.id);
+          if (user && user.isAdmin) {
+            const targetUser = group_rooms[room]?.find(u => u.id === id);
+            if (targetUser && !targetUser.isAdmin) {
+              console.log(`${userName} kicked ${targetUser.userName} from room ${room}`);
+              group_rooms[room] = group_rooms[room].filter(u => u.id !== id);
+              io.to(id).emit('kicked');
+              socket.to(room).emit('user-left', { id });
+              io.to(room).emit('participants', group_rooms[room]);
+              io.sockets.sockets.get(id)?.leave(room);
+            }
+          }
+        });
+    
+        socket.on('leave-room', ({ room, id }) => {
+          if (group_rooms[room]) {
+            const user = group_rooms[room].find(u => u.id === id);
+            if (user) {
+              console.log(`${user.userName} left room ${room}`);
+              if (user.isAdmin) {
+                io.to(room).emit('room-closed');
+                group_rooms[room].forEach(u => {
+                  io.to(u.id).emit('user-left', { id: u.id });
+                });
+                delete group_rooms[room];
+                socket.to(room).emit('participants', []);
+              } else {
+                group_rooms[room] = group_rooms[room].filter(u => u.id !== id);
+                socket.to(room).emit('user-left', { id });
+                io.to(room).emit('participants', group_rooms[room]);
+                if (group_rooms[room].length === 0) {
+                  delete group_rooms[room];
+                }
+              }
+            }
+            socket.leave(room);
+          }
+        });
+    
+        socket.on('start-call', (room) => {
+          const user = group_rooms[room]?.find(u => u.id === socket.id);
+          if (user && user.isAdmin) {
+            io.to(room).emit('call-started');
+          }
+        });
+    
+        socket.on('end-call', (room) => {
+          const user = group_rooms[room]?.find(u => u.id === socket.id);
+          if (user && user.isAdmin) {
+            io.to(room).emit('call-ended');
+          }
+        });
+    
+        socket.on('disconnect', () => {
+          console.log('User disconnected:', socket.id);
+          for (const room in group_rooms) {
+            if (group_rooms[room].some(user => user.id === socket.id)) {
+              const user = group_rooms[room].find(u => u.id === socket.id);
+              if (user) {
+                console.log(`${user.userName} disconnected from room ${room}`);
+                if (user.isAdmin) {
+                  io.to(room).emit('room-closed');
+                  group_rooms[room].forEach(u => {
+                    io.to(u.id).emit('user-left', { id: u.id });
+                  });
+                  delete group_rooms[room];
+                  socket.to(room).emit('participants', []);
+                } else {
+                  group_rooms[room] = group_rooms[room].filter(u => u.id !== socket.id);
+                  socket.to(room).emit('user-left', { id: socket.id });
+                  io.to(room).emit('participants', group_rooms[room]);
+                  if (group_rooms[room].length === 0) {
+                    delete group_rooms[room];
+                  }
+                }
+              }
+            }
+          }
+        });
       });
     });
   }
