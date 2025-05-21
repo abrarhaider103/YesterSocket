@@ -8,8 +8,8 @@ import { Server } from "socket.io";
 import { getRoom, getRoomTwo, getNewToken, transformArgs } from "./utils.js";
 import routes from "./routes.js";
 const options = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
+  key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/ws.yester.games.key'),
+  cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/ws.yester.games.crt')
 };
 const __dirname = path.resolve();
 
