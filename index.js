@@ -8,8 +8,8 @@ import { Server } from "socket.io";
 import { getRoom, getRoomTwo, getNewToken, transformArgs } from "./utils.js";
 import routes from "./routes.js";
 const options = {
-  key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/ws.yester.games.key'),
-  cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/ws.yester.games.crt')
+  // key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/ws.yester.games.key'),
+  // cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/ws.yester.games.crt')
 };
 const __dirname = path.resolve();
 
@@ -32,7 +32,7 @@ if (global.mainserver === true) {
 
 function makeServer(port, startIO) {
   const app = express();
-  server = https.createServer(options, app);
+  server = http.createServer(app);
   app.use(express.urlencoded());
   app.use(express.json());
 
