@@ -32,7 +32,8 @@ if (global.mainserver === true) {
 
 function makeServer(port, startIO) {
   const app = express();
-  server = https.createServer(options, app);
+  // server = https.createServer(options, app);
+  server = http.createServer( app);
   app.use(express.urlencoded());
   app.use(express.json());
 
